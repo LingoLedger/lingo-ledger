@@ -31,6 +31,7 @@ CLI examples:
 ```bash
 lingo brief validate brief.json
 lingo search brief.json --registry practitioners.jsonl
+lingo naati-steps brief.json
 lingo eval reference.jsonl hypotheses.txt
 ```
 
@@ -64,6 +65,7 @@ Source: [Y Combinator Requests for Startups](https://www.ycombinator.com/rfs).
 | Layer | Status | Where |
 |---|---|---|
 | Certified-practitioner search (NAATI, CATTI, ATA, ITI, sworn, other) | Built over registry exports, with tests (Python, TypeScript). Live registry scraping not built | `src/lingo_ledger/registry.py`, `ts/src/index.ts` |
+| NAATI directory lookup steps (manual search on directory.naati.com.au) | Built, with tests (Python, TypeScript). The tool makes no requests to NAATI; a person runs the search | `src/lingo_ledger/naati_guide.py`, `ts/src/index.ts` |
 | Project brief validation | Done, with tests (Python, TypeScript) | `src/lingo_ledger/brief.py`, `ts/src/index.ts` |
 | Document workflow: translate, review, approve | Stub with tests | `src/lingo_ledger/workflow.py` |
 | Evaluation harness: exact match and token F1 | Baseline with tests (Python, TypeScript) | `src/lingo_ledger/evaluate.py`, `ts/src/index.ts` |

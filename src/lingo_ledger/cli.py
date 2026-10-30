@@ -14,6 +14,7 @@ from pathlib import Path
 
 from lingo_ledger.brief import load_brief, validate_brief
 from lingo_ledger.evaluate import load_examples, score
+from lingo_ledger.naati_guide import naati_search_steps
 from lingo_ledger.registry import load_bundled_sample, load_practitioners, search_practitioners
 
 
@@ -58,6 +59,23 @@ def _cmd_search(args: argparse.Namespace) -> int:
     return 0
 
 
+def _cmd_naati_steps(args: argparse.Namespace) -> int:
+    try:
+        brief = load_brief(args.brief)
+    except (OSError, json.JSONDecodeError) as err:
+        print(f"error: cannot read brief {args.brief}: {err}", file=sys.stderr)
+        return 1
+    try:
+        guide = naati_search_steps(brief)
+    except ValueError as err:
+        print(f"error: {err}", file=sys.stderr)
+        return 1
+    print(f"Search by hand at {guide['url']}:")
+    for i, step in enumerate(guide["steps"], 1):
+        print(f"{i}. {step}")
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="lingo", description="Lingo Ledger: sourcing government-certified translation and interpreting (NAATI, CATTI, ATA, ITI, global certifications)")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -72,6 +90,10 @@ def build_parser() -> argparse.ArgumentParser:
     search.add_argument("brief", help="brief JSON file")
     search.add_argument("--registry", help="practitioner JSONL export (default: bundled sample)")
     search.set_defaults(func=_cmd_search)
+
+    naati = sub.add_parser("naati-steps", help="print steps to search the NAATI directory by hand")
+    naati.add_argument("brief", help="brief JSON file")
+    naati.set_defaults(func=_cmd_naati_steps)
 
     ev = sub.add_parser("eval", help="score hypotheses against a reference set")
     ev.add_argument("reference", help="JSONL file, one example per line")

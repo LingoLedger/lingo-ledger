@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { scoreTranslations, searchPractitioners, tokenF1, validateBrief, type Practitioner } from "../src/index.ts";
+import { naatiSearchSteps, scoreTranslations, searchPractitioners, tokenF1, validateBrief, type Practitioner } from "../src/index.ts";
 
 const good = {
   title: "Birth certificate for visa",
@@ -83,4 +83,16 @@ test("search excludes schemes the brief does not accept", () => {
 
 test("search rejects an invalid brief", () => {
   assert.throws(() => searchPractitioners({ ...search, purpose: "tax" }, pool), /invalid brief/);
+});
+
+test("naati steps name the directory and the fields to set", () => {
+  const guide = naatiSearchSteps({ ...search, certifications: ["NAATI"], purpose: "immigration" });
+  const text = guide.steps.join(" ");
+  assert.equal(guide.url, "https://directory.naati.com.au/");
+  assert.ok(text.includes("translate from en and translate into es"));
+  assert.ok(text.includes("Immigration"));
+});
+
+test("naati steps reject a brief that does not accept NAATI", () => {
+  assert.throws(() => naatiSearchSteps({ ...search, certifications: ["ATA"] }), /does not accept NAATI/);
 });

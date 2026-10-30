@@ -10,6 +10,7 @@ from mcp.server.fastmcp import FastMCP
 
 from lingo_ledger.brief import validate_brief
 from lingo_ledger.evaluate import Example, score
+from lingo_ledger.naati_guide import naati_search_steps
 from lingo_ledger.registry import load_bundled_sample, search_practitioners
 
 mcp = FastMCP(
@@ -49,6 +50,15 @@ def search_certified_translators(brief: dict, practitioners: list[dict] | None =
     else:
         pool = [parse_record(r) for r in practitioners]
     return {"matches": search_practitioners(brief, pool)}
+
+
+@mcp.tool()
+def naati_directory_steps(brief: dict) -> dict:
+    """Return the NAATI directory URL and step-by-step instructions for a person to search by hand.
+
+    Makes no requests to NAATI. The person runs the search on the official directory.
+    """
+    return naati_search_steps(brief)
 
 
 @mcp.tool()

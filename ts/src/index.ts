@@ -161,6 +161,45 @@ export function searchPractitioners(brief: unknown, practitioners: Practitioner[
   return matches.sort((x, y) => x.display_name.localeCompare(y.display_name));
 }
 
+export const NAATI_DIRECTORY_URL = "https://directory.naati.com.au/";
+
+const PURPOSE_TO_DOMAIN: Record<Purpose, string | null> = {
+  immigration: "Immigration",
+  court: "Legal",
+  regulatory: "Legal",
+  medical: "Health",
+  other: null,
+};
+
+/**
+ * Steps for a person to search the NAATI online directory by hand.
+ * Makes no requests to NAATI. Nothing is fetched or stored.
+ */
+export function naatiSearchSteps(brief: unknown): { url: string; steps: string[] } {
+  const check = validateBrief(brief);
+  if (!check.ok) throw new Error("invalid brief: " + check.errors.join("; "));
+  const b = brief as ProjectBrief;
+  if (!b.certifications.includes("NAATI")) {
+    throw new Error("this brief does not accept NAATI certification");
+  }
+
+  const domain = PURPOSE_TO_DOMAIN[b.purpose];
+  const steps = [
+    `Open ${NAATI_DIRECTORY_URL}.`,
+    "Choose Type: Translator (or Interpreter, if the job is interpreting).",
+    `Under Languages, choose translate from ${b.source_lang} and translate into ${b.target_lang} ` +
+      `(also check ${b.target_lang} to ${b.source_lang} if you want translators who work both ways).`,
+    "Under Certification type, tick: Certified, Recognised, Specialist Health or Legal.",
+  ];
+  if (domain) steps.push(`Under Domain, choose ${domain}.`);
+  steps.push("Click Show Advanced Search if you need more filters, then Find results.");
+  steps.push(
+    "For each practitioner you want to contact, note the name and the details they chose to display, " +
+      "then contact them only after the customer approves the message.",
+  );
+  return { url: NAATI_DIRECTORY_URL, steps };
+}
+
 function countTokens(text: string): Map<string, number> {
   const counts = new Map<string, number>();
   for (const token of text.toLowerCase().split(/\s+/).filter(Boolean)) {
