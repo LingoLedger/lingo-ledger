@@ -4,6 +4,16 @@
 
 Open-weight translation tooling for legal, immigration, and government documents. Lingo Ledger is built around one rule: a model drafts, and only a certified human reviewer approves.
 
+## Features
+
+These three features follow the Y Combinator Winter 2027 Requests for Startups that fit this project best.
+
+1. **Own your intelligence (open-weight models).** Fine-tune an open-weight model on permitted certified translation and interpretation work, instead of renting a frontier model. Buyers can run it on their own hardware, including courts and agencies that can't send documents to a third party. *Status: planned. Blocked on permitted training data.*
+2. **Vertical legal and government translation model.** Specialize a model for legal, immigration, and government terminology with a small curated dataset and an open evaluation set. *Status: evaluation harness exists; no model yet.*
+3. **Government document workflow (AI for City Hall).** Intake of scanned government forms, machine translation, human review by a certified translator, and routing. It's aimed at city agencies, courts, and immigration offices, which go beyond the city-government focus of the RFS. *Status: review workflow stub exists; intake not started.*
+
+Source: [Y Combinator Requests for Startups](https://www.ycombinator.com/rfs).
+
 ## Layers
 
 | Layer | Status | Where |
