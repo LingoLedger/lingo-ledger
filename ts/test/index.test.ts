@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { scoreTranslations, tokenF1, validateBrief } from "../src/index.ts";
+import { scoreTranslations, searchPractitioners, tokenF1, validateBrief, type Practitioner } from "../src/index.ts";
 
 const good = {
   title: "Birth certificate for visa",
@@ -52,4 +52,35 @@ test("scoreTranslations exact and partial", () => {
 
 test("scoreTranslations rejects mismatched lengths", () => {
   assert.throws(() => scoreTranslations([], ["x"]));
+});
+
+
+const pool: Practitioner[] = [
+  { id: "p1", display_name: "Zed", scheme: "NAATI", language_pairs: [["en", "es"]], region: "AU", source_registry: "export" },
+  { id: "p2", display_name: "Amy", scheme: "ITI", language_pairs: [["es", "en"]], region: "GB", source_registry: "export" },
+  { id: "p3", display_name: "Bo", scheme: "ATA", language_pairs: [["en", "es"]], region: "US", source_registry: "export" },
+  { id: "p4", display_name: "Cy", scheme: "NAATI", language_pairs: [["en", "fr"]], region: "AU", source_registry: "export" },
+];
+
+const search = {
+  title: "Birth certificate for visa",
+  source_lang: "en",
+  target_lang: "es",
+  purpose: "immigration",
+  certifications: ["NAATI", "ITI"],
+};
+
+test("search matches accepted scheme and language pair, either direction, sorted by name", () => {
+  const matches = searchPractitioners(search, pool);
+  assert.deepEqual(matches.map((m) => m.id), ["p2", "p1"]);
+  assert.equal(matches[1].matched_direction, "en->es");
+  assert.equal(matches[0].matched_direction, "es->en");
+});
+
+test("search excludes schemes the brief does not accept", () => {
+  assert.deepEqual(searchPractitioners({ ...search, certifications: ["ATA"] }, pool).map((m) => m.id), ["p3"]);
+});
+
+test("search rejects an invalid brief", () => {
+  assert.throws(() => searchPractitioners({ ...search, purpose: "tax" }, pool), /invalid brief/);
 });

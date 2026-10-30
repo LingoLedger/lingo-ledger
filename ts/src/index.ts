@@ -1,7 +1,8 @@
 /**
  * Lingo Ledger TypeScript API.
  *
- * Mirrors the Python package: project-brief validation and translation scoring.
+ * MCP AI Agent for sourcing Gov-Certified Translation & Interpreting Across NAATI, CATTI, ATA, ITI & Global certifications.
+ * Mirrors the Python package: project-brief validation, practitioner search, and translation scoring.
  * Pure functions, no network access, no translator contact.
  */
 
@@ -101,6 +102,63 @@ export function scoreTranslations(examples: Example[], hypotheses: string[]): Sc
     f1 += tokenF1(hypotheses[i], e.reference);
   });
   return { exact_match: exact / examples.length, token_f1: f1 / examples.length };
+}
+
+/** A certified practitioner record, from a registry export or partner feed. */
+export interface Practitioner {
+  id: string;
+  display_name: string;
+  scheme: CertificationScheme;
+  language_pairs: [string, string][];
+  region: string;
+  source_registry: string;
+  profile_url?: string;
+}
+
+/** A practitioner who matches a brief. */
+export interface PractitionerMatch {
+  id: string;
+  display_name: string;
+  scheme: CertificationScheme;
+  region: string;
+  source_registry: string;
+  profile_url?: string;
+  matched_direction: string;
+}
+
+/**
+ * Find practitioners whose scheme the brief accepts and who work its language pair.
+ * A pair matches in either direction. Results are sorted by display name.
+ * Only searches. It does not contact anyone.
+ */
+export function searchPractitioners(brief: unknown, practitioners: Practitioner[]): PractitionerMatch[] {
+  const check = validateBrief(brief);
+  if (!check.ok) throw new Error("invalid brief: " + check.errors.join("; "));
+  const b = brief as ProjectBrief;
+
+  const source = b.source_lang.toLowerCase();
+  const target = b.target_lang.toLowerCase();
+  const accepted = new Set<string>(b.certifications);
+
+  const matches: PractitionerMatch[] = [];
+  for (const p of practitioners) {
+    if (!accepted.has(p.scheme)) continue;
+    const pairs = p.language_pairs.map(([s, t]) => [s.toLowerCase(), t.toLowerCase()]);
+    let direction: string | null = null;
+    if (pairs.some(([s, t]) => s === source && t === target)) direction = `${source}->${target}`;
+    else if (pairs.some(([s, t]) => s === target && t === source)) direction = `${target}->${source}`;
+    if (direction === null) continue;
+    matches.push({
+      id: p.id,
+      display_name: p.display_name,
+      scheme: p.scheme,
+      region: p.region,
+      source_registry: p.source_registry,
+      profile_url: p.profile_url,
+      matched_direction: direction,
+    });
+  }
+  return matches.sort((x, y) => x.display_name.localeCompare(y.display_name));
 }
 
 function countTokens(text: string): Map<string, number> {

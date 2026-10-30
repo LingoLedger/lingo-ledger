@@ -1,7 +1,7 @@
 {
   "name": "@lingoledger/lingo-ledger",
   "version": "0.1.0",
-  "description": "TypeScript API for Lingo Ledger: project briefs and translation scoring",
+  "description": "MCP AI Agent for sourcing Gov-Certified Translation & Interpreting Across NAATI, CATTI, ATA, ITI & Global certifications. TypeScript API: project briefs and translation scoring",
   "license": "Apache-2.0",
   "type": "module",
   "main": "src/index.ts",

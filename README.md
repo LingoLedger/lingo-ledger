@@ -2,13 +2,17 @@
 
 # Lingo Ledger
 
-Open-weight translation tooling for legal, immigration, and government documents. Lingo Ledger is built around one rule: a model drafts, and only a certified human reviewer approves.
+**MCP AI Agent for sourcing Gov-Certified Translation & Interpreting Across NAATI, CATTI, ATA, ITI & Global certifications.**
+
+Lingo Ledger is built around one rule: a model drafts, and only a certified human reviewer approves. Its focus is legal, immigration, and government documents.
+
+> Status: practitioner search over registry exports, brief validation, evaluation scoring, and the review workflow are built. Live registry scraping and translator outreach are not built yet. See the Layers table.
 
 ## About
 
-Lingo Ledger helps organisations find government-certified translators and interpreters across the major accreditation systems: NAATI, CATTI, ATA, ITI, and sworn or accredited registers. A customer submits a project brief, covering either a document that needs official certification (immigration, court, or regulatory use) or an interpreting assignment. Lingo Ledger then checks the brief and matches it to qualified professionals.
+Lingo Ledger is an MCP AI agent for sourcing government-certified translation and interpreting across NAATI, CATTI, ATA, ITI, and global certifications. It helps organisations find government-certified translators and interpreters across these accreditation systems and sworn or accredited registers. A customer submits a project brief, covering either a document that needs official certification (immigration, court, or regulatory use) or an interpreting assignment. Lingo Ledger then checks the brief and matches it to qualified professionals.
 
-Planned capabilities, not yet built: searching public certification registers, drafting outreach to translators, and consolidating responses into a side-by-side comparison. Outreach will only send after the customer approves it. Enterprise security, audit trails, and secure document handling are also planned and aren't in this release.
+Built: matching a brief to certified practitioners from registry exports or partner feeds, by certification scheme and language pair (either direction). Not built yet: live search of the public NAATI, CATTI, ATA, and ITI directories (needs a terms check and a data arrangement first), drafting outreach to translators, and a side-by-side comparison. Outreach will only send after the customer approves it. Enterprise security, audit trails, and secure document handling are also planned and aren't in this release.
 
 Audience: migration and visa agencies, language service providers, legal practices, healthcare providers, government departments, multinational companies, and international organisations that need officially recognised translations.
 
@@ -18,27 +22,32 @@ Lingo Ledger ships three interfaces over the same logic:
 
 | Interface | Use it for | Where |
 |---|---|---|
+| MCP server (`lingo-mcp`) | The primary interface: an AI agent that calls Lingo Ledger tools over stdio | `src/lingo_ledger/mcp_server.py` |
 | CLI (`lingo`) | Scripts and terminal use | `src/lingo_ledger/cli.py` |
-| MCP server (`lingo-mcp`) | AI agents that call tools over stdio | `src/lingo_ledger/mcp_server.py` |
 | TypeScript API | Node and TypeScript apps | `ts/src/index.ts` |
 
 CLI examples:
 
 ```bash
 lingo brief validate brief.json
+lingo search brief.json --registry practitioners.jsonl
 lingo eval reference.jsonl hypotheses.txt
 ```
+
+Without `--registry`, `search` uses the bundled sample records. Those records are fictional fixtures for testing, not real practitioners.
 
 TypeScript example:
 
 ```ts
-import { validateBrief, scoreTranslations } from "@lingoledger/lingo-ledger";
+import { validateBrief, searchPractitioners } from "@lingoledger/lingo-ledger";
 
-const check = validateBrief(JSON.parse(briefText));
+const brief = JSON.parse(briefText);
+const check = validateBrief(brief);
 if (!check.ok) console.error(check.errors);
+else console.log(searchPractitioners(brief, records));
 ```
 
-Both the MCP server and the TypeScript API expose `validate_project_brief` (`validateBrief`) and `score_translations` (`scoreTranslations`). The brief check only validates the input. It never contacts a translator.
+The MCP server and the TypeScript API both expose brief validation (`validate_project_brief` / `validateBrief`), practitioner search (`search_certified_translators` / `searchPractitioners`), and translation scoring (`score_translations` / `scoreTranslations`). Search only reads the records it is given. It never contacts a translator.
 
 ## Features
 
@@ -54,6 +63,7 @@ Source: [Y Combinator Requests for Startups](https://www.ycombinator.com/rfs).
 
 | Layer | Status | Where |
 |---|---|---|
+| Certified-practitioner search (NAATI, CATTI, ATA, ITI, sworn, other) | Built over registry exports, with tests (Python, TypeScript). Live registry scraping not built | `src/lingo_ledger/registry.py`, `ts/src/index.ts` |
 | Project brief validation | Done, with tests (Python, TypeScript) | `src/lingo_ledger/brief.py`, `ts/src/index.ts` |
 | Document workflow: translate, review, approve | Stub with tests | `src/lingo_ledger/workflow.py` |
 | Evaluation harness: exact match and token F1 | Baseline with tests (Python, TypeScript) | `src/lingo_ledger/evaluate.py`, `ts/src/index.ts` |

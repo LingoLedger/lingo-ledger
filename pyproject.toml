@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "lingo-ledger"
 version = "0.1.0"
-description = "Open-weight translation tooling for legal, immigration, and government documents"
+description = "MCP AI Agent for sourcing Gov-Certified Translation & Interpreting Across NAATI, CATTI, ATA, ITI & Global certifications"
 readme = "README.md"
 license = { text = "Apache-2.0" }
 requires-python = ">=3.10"
@@ -21,6 +21,9 @@ dev = ["pytest>=8", "mcp>=1.2,<2"]
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.setuptools.package-data]
+lingo_ledger = ["data/*.jsonl"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

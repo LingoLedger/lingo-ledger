@@ -1,0 +1,4 @@
+{"id": "sample-001", "display_name": "SAMPLE Translator A", "scheme": "NAATI", "language_pairs": [["en", "es"], ["es", "en"]], "region": "AU", "source_registry": "sample (not a real registry record)"}
+{"id": "sample-002", "display_name": "SAMPLE Translator B", "scheme": "ATA", "language_pairs": [["en", "zh"]], "region": "US", "source_registry": "sample (not a real registry record)"}
+{"id": "sample-003", "display_name": "SAMPLE Translator C", "scheme": "CATTI", "language_pairs": [["zh", "en"]], "region": "CN", "source_registry": "sample (not a real registry record)"}
+{"id": "sample-004", "display_name": "SAMPLE Translator D", "scheme": "ITI", "language_pairs": [["en", "es"]], "region": "GB", "source_registry": "sample (not a real registry record)"}

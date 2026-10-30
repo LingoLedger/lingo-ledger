@@ -49,3 +49,17 @@ def test_cli_eval_prints_scores(tmp_path, capsys):
     assert main(["eval", str(ref), str(hyp)]) == 0
     out = json.loads(capsys.readouterr().out)
     assert out["exact_match"] == 1.0
+
+
+def test_cli_search_prints_matches(tmp_path, capsys):
+    brief = tmp_path / "brief.json"
+    brief.write_text(json.dumps(GOOD))
+    assert main(["search", str(brief)]) == 0
+    out = json.loads(capsys.readouterr().out)
+    assert [m["id"] for m in out] == ["sample-001"]
+
+
+def test_cli_search_rejects_invalid_brief(tmp_path, capsys):
+    brief = tmp_path / "brief.json"
+    brief.write_text(json.dumps({**GOOD, "purpose": "tax"}))
+    assert main(["search", str(brief)]) == 1
