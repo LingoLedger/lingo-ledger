@@ -7,3 +7,4 @@ __pycache__/
 *.safetensors
 *.gguf
 data/private/
+ts/node_modules/

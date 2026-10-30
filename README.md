@@ -4,6 +4,42 @@
 
 Open-weight translation tooling for legal, immigration, and government documents. Lingo Ledger is built around one rule: a model drafts, and only a certified human reviewer approves.
 
+## About
+
+Lingo Ledger helps organisations find government-certified translators and interpreters across the major accreditation systems: NAATI, CATTI, ATA, ITI, and sworn or accredited registers. A customer submits a project brief, covering either a document that needs official certification (immigration, court, or regulatory use) or an interpreting assignment. Lingo Ledger then checks the brief and matches it to qualified professionals.
+
+Planned capabilities, not yet built: searching public certification registers, drafting outreach to translators, and consolidating responses into a side-by-side comparison. Outreach will only send after the customer approves it. Enterprise security, audit trails, and secure document handling are also planned and aren't in this release.
+
+Audience: migration and visa agencies, language service providers, legal practices, healthcare providers, government departments, multinational companies, and international organisations that need officially recognised translations.
+
+## Interfaces
+
+Lingo Ledger ships three interfaces over the same logic:
+
+| Interface | Use it for | Where |
+|---|---|---|
+| CLI (`lingo`) | Scripts and terminal use | `src/lingo_ledger/cli.py` |
+| MCP server (`lingo-mcp`) | AI agents that call tools over stdio | `src/lingo_ledger/mcp_server.py` |
+| TypeScript API | Node and TypeScript apps | `ts/src/index.ts` |
+
+CLI examples:
+
+```bash
+lingo brief validate brief.json
+lingo eval reference.jsonl hypotheses.txt
+```
+
+TypeScript example:
+
+```ts
+import { validateBrief, scoreTranslations } from "@lingoledger/lingo-ledger";
+
+const check = validateBrief(JSON.parse(briefText));
+if (!check.ok) console.error(check.errors);
+```
+
+Both the MCP server and the TypeScript API expose `validate_project_brief` (`validateBrief`) and `score_translations` (`scoreTranslations`). The brief check only validates the input. It never contacts a translator.
+
 ## Features
 
 These three features follow the Y Combinator Winter 2027 Requests for Startups that fit this project best.
@@ -18,17 +54,30 @@ Source: [Y Combinator Requests for Startups](https://www.ycombinator.com/rfs).
 
 | Layer | Status | Where |
 |---|---|---|
+| Project brief validation | Done, with tests (Python, TypeScript) | `src/lingo_ledger/brief.py`, `ts/src/index.ts` |
 | Document workflow: translate, review, approve | Stub with tests | `src/lingo_ledger/workflow.py` |
-| Evaluation harness: exact match and token F1 | Baseline with tests | `src/lingo_ledger/evaluate.py` |
+| Evaluation harness: exact match and token F1 | Baseline with tests (Python, TypeScript) | `src/lingo_ledger/evaluate.py`, `ts/src/index.ts` |
+| CLI, MCP server, TypeScript API | Done, with tests | see Interfaces |
 | Domain fine-tuning data and recipe | Not started | `training/` |
 | Intake: scanned forms to text | Not started | planned |
 
 ## Quick start
 
+Python (CLI and MCP server):
+
 ```bash
 pip install -e ".[dev]"
 pytest
 ```
+
+TypeScript API (Node 22.6 or later, which runs `.ts` files directly):
+
+```bash
+cd ts
+npm test
+```
+
+Run the MCP server with `lingo-mcp`. It needs the `mcp` extra, which `.[dev]` includes.
 
 ## Evaluation
 
