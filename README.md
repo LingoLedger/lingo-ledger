@@ -16,6 +16,16 @@ Built: matching a brief to certified practitioners from registry exports or part
 
 Audience: migration and visa agencies, language service providers, legal practices, healthcare providers, government departments, multinational companies, and international organisations that need officially recognised translations.
 
+## Certified Translator Atlas
+
+`data/credentials_by_country.csv` lists, for every jurisdiction in the OpenCharity dataset, the body that credentials translators and interpreters and how that credential is used for government work. Each sourced row cites its source. `scripts/build_atlas.py` builds `site/index.html`, a D3 world map with a searchable table and a country detail panel.
+
+```bash
+python3 scripts/build_atlas.py   # writes site/index.html and site/credentials_by_country.csv
+```
+
+Status: 8 countries are sourced, 1 is partial, and the rest are not yet researched. Sourced means a body and at least one official or association source were found in a search; the sources were not fully re-verified. The page is not legal advice.
+
 ## Interfaces
 
 Lingo Ledger ships three interfaces over the same logic:
