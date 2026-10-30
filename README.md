@@ -1,3 +1,5 @@
+<img src="docs/assets/logo.png" alt="Lingo Ledger" width="161">
+
 # Lingo Ledger
 
 Open-weight translation tooling for legal, immigration, and government documents. Lingo Ledger is built around one rule: a model drafts, and only a certified human reviewer approves.
